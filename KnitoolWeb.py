@@ -8,7 +8,8 @@ app = Flask(__name__)
 app.secret_key = os.getenv("SECRET_KEY")  # .env dosyasından gizli anahtar okunuyor
 
 if __name__ == '__main__':
-    port = int(os.environ.get('PORT', 5000))
+    import os
+    port = int(os.environ.get('PORT', 10000))
     app.run(host='0.0.0.0', port=port)
 
 
