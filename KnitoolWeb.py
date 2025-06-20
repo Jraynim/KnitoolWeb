@@ -7,13 +7,6 @@ load_dotenv()
 app = Flask(__name__)
 app.secret_key = os.getenv("SECRET_KEY")  # .env dosyasından gizli anahtar okunuyor
 
-if __name__ == '__main__':
-    import os
-    port = int(os.environ.get('PORT', 10000))
-    app.run(host='0.0.0.0', port=port)
-
-
-
 def get_progress_color(percent):
     if percent == 100:
         return "darkgreen"
@@ -28,11 +21,9 @@ def get_progress_color(percent):
     else:
         return "red"
 
-
 @app.route('/')
 def index():
     return render_template('index.html')
-
 
 @app.route('/simple_counter', methods=['GET', 'POST'])
 def simple_counter():
@@ -47,7 +38,6 @@ def simple_counter():
         return redirect(url_for('simple_counter'))
 
     return render_template('simple_counter.html', count=session['count'])
-
 
 @app.route('/project_counter', methods=['GET', 'POST'])
 def project_counter():
@@ -167,7 +157,6 @@ def project_counter():
                                selected_project=pname,
                                show_confetti=(percent == 100))
 
-    # Burada kesin return var, fonksiyonun hiç return etmemesi imkansız
     return render_template('project_counter.html',
                            show_counter=False,
                            project_names=project_names,
@@ -181,6 +170,7 @@ def reset_project():
     return redirect(url_for('project_counter'))
 
 
-
 if __name__ == '__main__':
-    app.run(debug=True)
+    import os
+    port = int(os.environ.get('PORT', 10000))
+    app.run(host='0.0.0.0', port=port, debug=True)
