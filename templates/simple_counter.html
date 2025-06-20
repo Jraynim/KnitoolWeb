@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8" />
+    <title>Basit Örgü Sayaç</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin-top: 80px;
+            background-color: #f9f9f9;
+            color: navy;
+        }
+        .counter {
+            font-size: 48px;
+            margin: 20px;
+        }
+        button {
+            font-size: 32px;
+            padding: 10px 20px;
+            margin: 0 20px;
+            background-color: white;
+            border: 2px solid #ccc;
+            border-radius: 10px;
+            cursor: pointer;
+            box-shadow: 0 4px 6px #aaa;
+            transition: all 0.2s ease;
+        }
+        button:hover {
+            background-color: #eee;
+        }
+        button:active {
+            box-shadow: 0 2px 3px #666;
+            transform: translateY(2px);
+        }
+        .decrement {
+            color: maroon;
+            border-color: maroon;
+        }
+        .increment {
+            color: darkgreen;
+            border-color: darkgreen;
+        }
+        a {
+            display: block;
+            margin-top: 40px;
+            color: navy;
+            text-decoration: none;
+            font-weight: bold;
+        }
+        a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <h1>Örgü Sıra Sayacı</h1>
+    <form method="post">
+        <button type="submit" name="decrement" class="decrement">-</button>
+        <span class="counter">{{ count }}</span>
+        <button type="submit" name="increment" class="increment">+</button>
+    </form>
+    <a href="{{ url_for('index') }}">Ana Sayfa</a>
+</body>
+</html>

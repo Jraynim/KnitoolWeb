@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8" />
+    <title>Proje Sayacı</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 450px;
+            margin: 40px auto;
+            padding: 20px;
+            text-align: center;
+            background-color: #f9f9f9;
+            color: navy;
+            border-radius: 12px;
+            border: 1px solid #ccc;
+        }
+        input, select {
+            width: 80%;
+            padding: 8px;
+            margin: 12px auto;
+            display: block;
+            border-radius: 8px;
+            border: 1px solid #999;
+            background-color: #f5f5dc; /* bej */
+            font-size: 18px;
+            text-align: center;
+        }
+        button {
+            margin-top: 15px;
+            padding: 12px 40px;
+            font-size: 20px;
+            border-radius: 12px;
+            background-color: #f5f5dc; /* bej */
+            color: navy;
+            border: none;
+            box-shadow: 0 4px #aaa;
+            cursor: pointer;
+        }
+        button:active {
+            box-shadow: 0 2px #888;
+            transform: translateY(2px);
+        }
+        .error {
+            color: red;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        .counter-buttons {
+            margin-top: 30px;
+        }
+        .counter-buttons form {
+            display: inline-block;
+        }
+        .counter-buttons button {
+            font-size: 36px;
+            margin: 0 20px;
+            border: 2px solid;
+            border-radius: 12px;
+            background-color: white;
+            color: navy;
+            cursor: pointer;
+            box-shadow: 3px 3px 5px #888888;
+        }
+        .decrement {
+            color: maroon;
+            border-color: maroon;
+        }
+        .increment {
+            color: darkgreen;
+            border-color: darkgreen;
+        }
+        .progress {
+            font-size: 22px;
+            margin-top: 20px;
+            font-weight: bold;
+        }
+        .time-info {
+            font-size: 16px;
+            margin-top: 10px;
+            color: #333;
+        }
+        .celebrate {
+            font-size: 36px;
+            margin-top: 20px;
+        }
+
+        /* Yeni proje ve ana sayfa butonları küçük ve navy-beyaz */
+        .nav-button {
+            background-color: navy;
+            color: white;
+            padding: 8px 20px;
+            font-size: 14px;
+            border-radius: 8px;
+            border: none;
+            cursor: pointer;
+            box-shadow: 0 3px 6px rgba(0,0,0,0.3);
+            margin: 5px 10px;
+        }
+        .nav-button:hover {
+            background-color: #000080cc;
+        }
+        /* Butonların formu yan yana */
+        .nav-buttons-container {
+            margin-top: 20px;
+        }
+        .nav-buttons-container form {
+            display: inline-block;
+        }
+
+        /* Sayaç sayısının rengi hep navy olsun */
+        .count-display {
+            font-size: 48px;
+            color: navy !important;
+        }
+    </style>
+</head>
+<body>
+    <h1>Proje Bazlı Örgü Sayaç</h1>
+
+    {% if error %}
+    <div class="error">{{ error }}</div>
+    {% endif %}
+
+    {% if not show_counter %}
+    <!-- Proje seçimi veya yeni proje formu -->
+    <form method="post">
+        <label for="project_name">Proje Adı (Seç veya Yeni Gir):</label>
+        <input type="text" id="project_name" name="project_name" list="project_list" autocomplete="off" value="{{ selected_project or '' }}">
+        <datalist id="project_list">
+            {% for p in project_names %}
+            <option value="{{ p }}"></option>
+            {% endfor %}
+        </datalist>
+
+        <label for="total">Toplam Sıra:</label>
+        <input type="number" id="total" name="total" min="1" required>
+
+        <label for="start">Başlanan Sıra:</label>
+        <input type="number" id="start" name="start" min="1" required>
+
+        <button type="submit">Başla</button>
+    </form>
+
+    <div class="nav-buttons-container">
+        <form action="{{ url_for('index') }}" method="get">
+            <button type="submit" class="nav-button">Ana Sayfa</button>
+        </form>
+        <form action="{{ url_for('reset_project') }}" method="get">
+            <button type="submit" class="nav-button">Yeni Proje Seç veya Başlat</button>
+        </form>
+    </div>
+
+    <script>
+        const projectsDetails = {{ projects | tojson | safe }};
+        const projectNameInput = document.getElementById("project_name");
+        const totalInput = document.getElementById("total");
+        const startInput = document.getElementById("start");
+
+        projectNameInput.addEventListener("input", function() {
+            const pname = this.value.trim();
+            if (projectsDetails.hasOwnProperty(pname)) {
+                totalInput.value = projectsDetails[pname]["total"];
+                startInput.value = projectsDetails[pname]["count"] + 1;
+            } else {
+                totalInput.value = "";
+                startInput.value = "";
+            }
+        });
+    </script>
+
+    {% else %}
+    <!-- Sayaç arayüzü -->
+    <div class="counter-buttons">
+        <form method="post" style="display:inline;">
+            <button type="submit" name="decrement" class="decrement">-</button>
+        </form>
+        <span class="count-display">{{ count }}/{{ total }}</span>
+        <form method="post" style="display:inline;">
+            <button type="submit" name="increment" class="increment">+</button>
+        </form>
+    </div>
+
+    <div class="progress" style="color: {{ progress_color }};">
+        {% if percent == 100 %}
+            DONE!!! 🎉
+        {% else %}
+            %{{ percent }} tamamlandı
+        {% endif %}
+    </div>
+
+    <div class="time-info">
+        {% if last_row_time %}
+            <p>Bu sırayı {{ last_row_time }} sürede ördün!</p>
+        {% endif %}
+        {% if total_time %}
+            <p><strong>Bu projeyi toplam {{ total_time }} sürede ördün!</strong></p>
+        {% endif %}
+    </div>
+
+    <div class="nav-buttons-container">
+        <form action="{{ url_for('reset_project') }}" method="get">
+            <button type="submit" class="nav-button">Yeni Proje Seç veya Başlat</button>
+        </form>
+        <form action="{{ url_for('index') }}" method="get">
+            <button type="submit" class="nav-button">Ana Sayfa</button>
+        </form>
+    </div>
+
+    {% if show_confetti %}
+    <div class="celebrate">🎊🎆🎉</div>
+    {% endif %}
+
+    {% endif %}
+</body>
+</html>

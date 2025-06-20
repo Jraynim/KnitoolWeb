@@ -1,0 +1,21 @@
+from flask import Flask, render_template, request, redirect, url_for, session
+
+app = Flask(__name__)
+app.secret_key = 'gizli-bir-anahtar'  # Bu session için şart
+
+@app.route('/', methods=['GET', 'POST'])
+def index():
+    if 'count' not in session:
+        session['count'] = 0
+
+    if request.method == 'POST':
+        if 'increment' in request.form:
+            session['count'] += 1
+        elif 'decrement' in request.form and session['count'] > 0:
+            session['count'] -= 1
+        return redirect(url_for('index'))
+
+    return render_template('index.html', count=session['count'])
+
+if __name__ == '__main__':
+    app.run(debug=True)
